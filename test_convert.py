@@ -34,3 +34,9 @@ def test_preceeding_backslashes():
     assert preceeding_backslashes("\\t", 1) == 1
     assert preceeding_backslashes("\\\\t", 2) == 2
     assert preceeding_backslashes("\\\\t \\l", 5) == 1
+
+def test_change_extension():
+    assert change_file_extension("test.docx", "md") == "test.md"
+
+def test_append_before_extension():
+    assert append_before_extension("test.docx", "_messy") == "test_messy.docx"

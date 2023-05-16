@@ -1,7 +1,9 @@
 from functools import partial
 import sys
+import json
+import os
 
-def preceeding_backslashes(text, idx):
+def count_preceeding_backslashes(text: str, idx: int) -> int:
     backslashes_encountered = 0
     i = 0
     while True:
@@ -16,13 +18,13 @@ def preceeding_backslashes(text, idx):
             return backslashes_encountered
         backslashes_encountered += 1
 
-def find_unescaped(text: str, target: str, offset=0, reverse=False):
+def find_unescaped(text: str, target: str, offset=0, reverse=False) -> int:
     """Find first occurrence of str NOT escaped by backslash"""
     if not reverse:
         idx = text.index(target, offset)
     else:
         idx = text[:offset].rindex(target)
-    if preceeding_backslashes(text, idx) % 2 != 0:
+    if count_preceeding_backslashes(text, idx) % 2 != 0:
         if not reverse:
             return find_unescaped(text, target, idx+1, reverse=reverse)
         else:
@@ -58,7 +60,7 @@ def between_delimiters(text: str, idx: int, start_delimiter: str, end_delimiter:
 between_square_brackets = partial(between_delimiters, start_delimiter="[", end_delimiter="]")
 between_curly_braces = partial(between_delimiters, start_delimiter="{", end_delimiter="}")
 
-def split_pandoc_text_on_lines(text):
+def split_pandoc_text_on_lines(text: str):
     "Split on newlines, excluding newlines inside comment text or metadata"
     paragraph_text = ""
     paragraphs = []
@@ -74,7 +76,7 @@ def split_pandoc_text_on_lines(text):
     paragraphs.append(paragraph_text)
     return paragraphs
 
-def process_line(line):  # return (text, col_start, col_end) for each comment
+def process_line(line: str):  # return (text, col_start, col_end) for each comment
     idx = 0
     trashed_chars = 0
     ret = []
@@ -85,10 +87,6 @@ def process_line(line):  # return (text, col_start, col_end) for each comment
             break
         end_idx = find_square_bracket_end(line, offset=idx)
         comment_text = line[idx+1:end_idx]
-        # The +1's are to make it one-indexed for neovim
-        col_start = (idx - trashed_chars) + 1
-        col_end = ((idx + len(comment_text)) - trashed_chars) + 1
-        ret.append((comment_text, col_start, col_end))
         first_curly_brace_end = find_curly_brace_end(line, offset=end_idx)
         second_square_bracket_start = find_square_bracket_start(line, offset=first_curly_brace_end+1)
         commented_text = line[first_curly_brace_end+1:second_square_bracket_start]
@@ -96,23 +94,46 @@ def process_line(line):  # return (text, col_start, col_end) for each comment
         chars_to_trash = ((second_curly_brace_end - idx) + 1) - len(commented_text)
         idx = second_curly_brace_end + 1
         trashed_chars += chars_to_trash
+        col_start = (idx - trashed_chars) - len(commented_text)
+        col_end = idx - trashed_chars
+        ret.append((comment_text, col_start, col_end))
     return ret
+
+def change_file_extension(filename: str, new_ext: str):
+    return filename[:filename.rindex(".")] + "." + new_ext
+
+def append_before_extension(filename: str, text_to_append: str):
+    dot_index = filename.rindex(".")
+    return filename[:dot_index] + text_to_append + filename[dot_index:]
+
+def comment_to_dict(comment):
+    return {"text": comment[0], "row": comment[1], "col": comment[2], "end_row": comment[1], "end_col": comment[3]}
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("usage: convert.py input_file")
+        print(f"usage: {sys.argv[0]} input_file")
         sys.exit()
 
     in_file = sys.argv[1]
+    clean_markdown_filename = change_file_extension(in_file, "md")
+    commented_markdown_filename = append_before_extension(clean_markdown_filename, "_commented")
+
+    os.system(f"pandoc --track-changes all --wrap=none {in_file} -o {commented_markdown_filename}")
+    os.system(f"pandoc --wrap=none {in_file} -o {clean_markdown_filename}")
     
-    with open(in_file) as f:
+    with open(commented_markdown_filename) as f:
         text = f.read()
 
     lines = split_pandoc_text_on_lines(text)
-    all_comments = []
+    comment_id = 1
+    all_comments = {}
     for i, line in enumerate(lines):
         line_comments = process_line(line)
         for line_comment in line_comments:
             # comment text, row, col start, col end
-            all_comments.append([line_comment[0], i, line_comment[1], line_comment[2]])
-    print(all_comments)
+            full_comment = [line_comment[0], i, line_comment[1], line_comment[2]]
+            comment_as_dict = comment_to_dict(full_comment)
+            all_comments[comment_id] = comment_as_dict
+            comment_id += 1
+    with open(f".{clean_markdown_filename}_comments", "w") as f:
+        f.write(json.dumps(all_comments))
