@@ -21,12 +21,11 @@ def change_file_extension(filename: str, new_ext: str):
     return filename[:filename.rindex(".")] + "." + new_ext
 
 if __name__ == "__main__":
-    in_file = sys.argv[1]
+    md_filename = sys.argv[1]
+    comments_filename = f".{md_filename}_comments"
 
-    with open(in_file) as f:
+    with open(comments_filename) as f:
         comments_dict = json.loads(f.read())
-
-    md_filename = in_file[1:-9]
 
     with open(md_filename) as f:
         md_text = f.read()
@@ -36,5 +35,8 @@ if __name__ == "__main__":
     for row_num, line in enumerate(md_lines):
         final_lines.append(process_line(line, row_num))
     final_text = "\n".join(final_lines)
+    commented_md_filename = "commented_md.md"
+    with open(commented_md_filename, "w") as f:
+        f.write(final_text)
     out_file = change_file_extension(md_filename, "docx")
-    os.system(f"pandoc --wrap=none --track-changes all {md_filename} -o {out_file}")
+    os.system(f"pandoc --wrap=none --track-changes all {commented_md_filename} -o {out_file}")
