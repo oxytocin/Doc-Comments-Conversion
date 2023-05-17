@@ -10,8 +10,8 @@ This repository contains a couple scripts to convert a text file + its correspon
 - [Doc Comments](https://github.com/oxytocin/DocComments) if you want to actually see comments or make new comments in the converted text file.
 
 ## Scripts
-- docx_to_md.py: `docx_to_md.py in_file [out_filename]` Convert docx to a text file and corresponding Doc Comments file. As with the original plugin, the Doc Comments file will be created with a name of `.[original_filename]_comments` and therefore will be hidden. If not specified, the output filename will be the same as the input filename but with a .md extension.
-- md_to_docx.py: `md_to_docx.py in_file [out_filename]` Convert text to docx, preserving comments made in Doc Comments. Note that you only need to provide the path to the text file; the script will automatically find the corresponding Doc Comments file based on the filename. If not specified, the output filename will be the same as the input filename but with a .docx extension.
+- docx_to_md.py: `docx_to_md.py in_file -o out_file -c comment_file_dir` Convert docx to a text file and corresponding Doc Comments file. As with the original plugin, the Doc Comments file will be created with a name of `.[original_filename]_comments` and therefore will be hidden. If not specified, the output file will be the same as the input file but with a .md extension. If not specified, the Doc Comments file will be saved in the same directory as the output file.
+- md_to_docx.py: `md_to_docx.py in_file -o out_file -c comment_file_dir` Convert text to docx, preserving comments made in Doc Comments. If a directory for Doc Comments files is not specified, the script will look for one in the current working directory. If not specified, the output filename will be the same as the input filename but with a .docx extension.
 
 ## Limitations
 - Comments will be converted with "Unknown Author" and a fixed date. I am not sure what will happen if you use these scripts on a docx file that has suggestions.
