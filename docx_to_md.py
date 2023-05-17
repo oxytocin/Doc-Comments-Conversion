@@ -136,3 +136,5 @@ if __name__ == "__main__":
             comment_id += 1
     with open(f".{clean_markdown_filename}_comments", "w") as f:
         f.write(json.dumps(all_comments))
+    os.system(f"rm {commented_markdown_filename}")
+

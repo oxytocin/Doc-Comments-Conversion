@@ -40,3 +40,5 @@ if __name__ == "__main__":
         f.write(final_text)
     out_file = change_file_extension(md_filename, "docx")
     os.system(f"pandoc --wrap=none --track-changes all {commented_md_filename} -o {out_file}")
+    os.system(f"rm {commented_md_filename}")
+
