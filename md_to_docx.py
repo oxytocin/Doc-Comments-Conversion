@@ -21,7 +21,13 @@ def change_file_extension(filename: str, new_ext: str):
     return filename[:filename.rindex(".")] + "." + new_ext
 
 if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print(f"usage: {sys.argv[0]} input_file [output_file]")
     md_filename = sys.argv[1]
+    out_file = change_file_extension(md_filename, "docx") if len(sys.argv) < 3 else sys.argv[2]
+    if not out_file.endswith(".docx"):
+        print("Output filename must end with .docx", file=sys.stderr)
+        sys.exit(1)
     comments_filename = f".{md_filename}_comments"
 
     with open(comments_filename) as f:
@@ -38,7 +44,6 @@ if __name__ == "__main__":
     commented_md_filename = "commented_md.md"
     with open(commented_md_filename, "w") as f:
         f.write(final_text)
-    out_file = change_file_extension(md_filename, "docx")
     os.system(f"pandoc --wrap=none --track-changes all {commented_md_filename} -o {out_file}")
     os.system(f"rm {commented_md_filename}")
 

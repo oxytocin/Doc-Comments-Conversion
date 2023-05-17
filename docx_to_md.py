@@ -110,11 +110,11 @@ def comment_to_dict(comment):
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print(f"usage: {sys.argv[0]} input_file")
+        print(f"usage: {sys.argv[0]} input_file [output_file]")
         sys.exit()
 
     in_file = sys.argv[1]
-    clean_markdown_filename = change_file_extension(in_file, "md")
+    clean_markdown_filename = change_file_extension(in_file, "md") if len(sys.argv) < 3 else sys.argv[2]
     commented_markdown_filename = append_before_extension(clean_markdown_filename, "_commented")
 
     os.system(f"pandoc --track-changes all --wrap=none {in_file} -o {commented_markdown_filename}")
