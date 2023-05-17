@@ -2,6 +2,7 @@
 import sys
 import json
 import os
+import argparse
 
 def process_line(line: str, row: int) -> str:
     last_comment_end = 0
@@ -22,19 +23,22 @@ def change_file_extension(filename: str, new_ext: str):
     return filename[:filename.rindex(".")] + "." + new_ext
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print(f"usage: {sys.argv[0]} input_file [output_file]")
-        sys.exit()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("in_file")
+    parser.add_argument("-o", required=False)
+    parser.add_argument("-c", required=False)
+    args = parser.parse_args()
 
-    md_path = sys.argv[1]
+    md_path = args.in_file
     md_file_head, md_filename = os.path.split(md_path)
-    out_file = change_file_extension(md_filename, "docx") if len(sys.argv) < 3 else sys.argv[2]
+    out_file_path = args.o if args.o else change_file_extension(md_filename, "docx")
+    _, out_file = os.path.split(out_file_path)
     if not out_file.endswith(".docx"):
         print("Output filename must end with .docx", file=sys.stderr)
         sys.exit(1)
     comments_filename = f".{md_filename}_comments"
-    comments_path = os.path.join(md_file_head, comments_filename)
-    out_file_path = os.path.join(md_file_head, out_file)
+    comments_file_head = args.c if args.c else md_file_head
+    comments_path = os.path.join(comments_file_head, comments_filename)
 
     with open(comments_path) as f:
         comments_dict = json.loads(f.read())
