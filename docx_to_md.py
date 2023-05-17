@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 from functools import partial
 import sys
 import json

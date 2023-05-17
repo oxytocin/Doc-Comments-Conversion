@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import sys
 import json
 import os
@@ -23,6 +24,8 @@ def change_file_extension(filename: str, new_ext: str):
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         print(f"usage: {sys.argv[0]} input_file [output_file]")
+        sys.exit()
+
     md_filename = sys.argv[1]
     out_file = change_file_extension(md_filename, "docx") if len(sys.argv) < 3 else sys.argv[2]
     if not out_file.endswith(".docx"):
