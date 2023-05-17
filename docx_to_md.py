@@ -114,14 +114,18 @@ if __name__ == "__main__":
         print(f"usage: {sys.argv[0]} input_file [output_file]")
         sys.exit()
 
-    in_file = sys.argv[1]
+    in_file_path = sys.argv[1]
+    in_file_head, in_file = os.path.split(in_file_path)
     clean_markdown_filename = change_file_extension(in_file, "md") if len(sys.argv) < 3 else sys.argv[2]
     commented_markdown_filename = append_before_extension(clean_markdown_filename, "_commented")
+    clean_markdown_path = os.path.join(in_file_head, clean_markdown_filename)
+    commented_markdown_path = os.path.join(in_file_head, commented_markdown_filename)
+    comments_file_path = os.path.join(in_file_head, f".{clean_markdown_filename}_comments")
 
-    os.system(f"pandoc --track-changes all --wrap=none {in_file} -o {commented_markdown_filename}")
-    os.system(f"pandoc --wrap=none {in_file} -o {clean_markdown_filename}")
+    os.system(f"pandoc --track-changes all --wrap=none {in_file_path} -o {commented_markdown_path}")
+    os.system(f"pandoc --wrap=none {in_file_path} -o {clean_markdown_path}")
     
-    with open(commented_markdown_filename) as f:
+    with open(commented_markdown_path) as f:
         text = f.read()
 
     lines = split_pandoc_text_on_lines(text)
@@ -135,7 +139,7 @@ if __name__ == "__main__":
             comment_as_dict = comment_to_dict(full_comment)
             all_comments[comment_id] = comment_as_dict
             comment_id += 1
-    with open(f".{clean_markdown_filename}_comments", "w") as f:
+    with open(comments_file_path, "w") as f:
         f.write(json.dumps(all_comments))
-    os.system(f"rm {commented_markdown_filename}")
+    os.system(f"rm {commented_markdown_path}")
 

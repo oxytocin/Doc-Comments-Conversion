@@ -26,17 +26,20 @@ if __name__ == "__main__":
         print(f"usage: {sys.argv[0]} input_file [output_file]")
         sys.exit()
 
-    md_filename = sys.argv[1]
+    md_path = sys.argv[1]
+    md_file_head, md_filename = os.path.split(md_path)
     out_file = change_file_extension(md_filename, "docx") if len(sys.argv) < 3 else sys.argv[2]
     if not out_file.endswith(".docx"):
         print("Output filename must end with .docx", file=sys.stderr)
         sys.exit(1)
     comments_filename = f".{md_filename}_comments"
+    comments_path = os.path.join(md_file_head, comments_filename)
+    out_file_path = os.path.join(md_file_head, out_file)
 
-    with open(comments_filename) as f:
+    with open(comments_path) as f:
         comments_dict = json.loads(f.read())
 
-    with open(md_filename) as f:
+    with open(md_path) as f:
         md_text = f.read()
 
     md_lines = md_text.split("\n")[:-1]
@@ -47,6 +50,6 @@ if __name__ == "__main__":
     commented_md_filename = "commented_md.md"
     with open(commented_md_filename, "w") as f:
         f.write(final_text)
-    os.system(f"pandoc --wrap=none --track-changes all {commented_md_filename} -o {out_file}")
+    os.system(f"pandoc --wrap=none --track-changes all {commented_md_filename} -o {out_file_path}")
     os.system(f"rm {commented_md_filename}")
 
