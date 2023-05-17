@@ -4,6 +4,7 @@ import json
 import os
 
 def count_preceeding_backslashes(text: str, idx: int) -> int:
+    """Count backslashes immediately preceeding char at idx"""
     backslashes_encountered = 0
     i = 0
     while True:
@@ -61,14 +62,11 @@ between_square_brackets = partial(between_delimiters, start_delimiter="[", end_d
 between_curly_braces = partial(between_delimiters, start_delimiter="{", end_delimiter="}")
 
 def split_pandoc_text_on_lines(text: str):
-    "Split on newlines, excluding newlines inside comment text or metadata"
+    "Split on newlines, excluding newlines inside pandoc comment text or metadata"
     paragraph_text = ""
     paragraphs = []
     for i, char in enumerate(text):
-        if char != "\n":
-            paragraph_text += char
-            continue
-        if between_square_brackets(text, i) or between_curly_braces(text, i):
+        if char != "\n" or between_square_brackets(text, i) or between_curly_braces(text, i):
             paragraph_text += char
             continue
         paragraphs.append(paragraph_text)
@@ -76,7 +74,8 @@ def split_pandoc_text_on_lines(text: str):
     paragraphs.append(paragraph_text)
     return paragraphs
 
-def process_line(line: str):  # return (text, col_start, col_end) for each comment
+def extract_comments_from_line(line: str):
+    """Return [text, col_start, col_end] for each comment"""
     idx = 0
     trashed_chars = 0
     ret = []
@@ -128,7 +127,7 @@ if __name__ == "__main__":
     comment_id = 1
     all_comments = {}
     for i, line in enumerate(lines):
-        line_comments = process_line(line)
+        line_comments = extract_comments_from_line(line)
         for line_comment in line_comments:
             # comment text, row, col start, col end
             full_comment = [line_comment[0], i, line_comment[1], line_comment[2]]
