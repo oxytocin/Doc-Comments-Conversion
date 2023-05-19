@@ -15,3 +15,4 @@ This repository contains a couple scripts to convert a text file + its correspon
 
 ## Limitations
 - Comments will be converted with "Unknown Author" and a fixed date. I am not sure what will happen if you use these scripts on a docx file that has suggestions.
+- docx_to_text.py botches the conversion if two comments are right next to one another with no space between them.
