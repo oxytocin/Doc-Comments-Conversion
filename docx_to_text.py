@@ -120,10 +120,10 @@ if __name__ == "__main__":
     in_file_path = args.in_file
     in_file_head, in_file = os.path.split(in_file_path)
     clean_markdown_path = args.o if args.o else f'./{change_file_extension(in_file, "md")}'
-    _, clean_markdown_filename = os.path.split(clean_markdown_path)
+    clean_markdown_head, clean_markdown_filename = os.path.split(clean_markdown_path)
     commented_markdown_filename = append_before_extension(clean_markdown_filename, "_commented")
     commented_markdown_path = os.path.join(in_file_head, commented_markdown_filename)
-    comments_file_head = args.c if args.c else in_file_head
+    comments_file_head = args.c if args.c else clean_markdown_head
     comments_file_path = os.path.join(comments_file_head, f".{clean_markdown_filename}_comments")
 
     os.system(f"pandoc --track-changes all --wrap=none {in_file_path} -o {commented_markdown_path}")
