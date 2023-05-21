@@ -1,6 +1,6 @@
 # Doc Comments Conversion
 
-[Video demo:](https://youtu.be/V_vfDR9o75c)
+[Video demo here](https://youtu.be/V_vfDR9o75c)
 
 If you are not already familiar with the Doc Comments plugin, see [here](https://github.com/oxytocin/DocComments). It allows you to make inline annotations in Neovim that are stored in a separate file and signified by highlights.
 
