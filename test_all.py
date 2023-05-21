@@ -1,5 +1,5 @@
 import pytest
-from convert import *
+from docx_to_text import *
 
 def test_find_unescaped():
     with pytest.raises(ValueError):
@@ -30,10 +30,10 @@ def test_split_pandoc_text_on_lines():
     assert split_pandoc_text_on_lines("lol\nlmao[lm\nfao]") == ['lol', 'lmao[lm\nfao]']
 
 def test_preceeding_backslashes():
-    assert preceeding_backslashes("", 0) == 0
-    assert preceeding_backslashes("\\t", 1) == 1
-    assert preceeding_backslashes("\\\\t", 2) == 2
-    assert preceeding_backslashes("\\\\t \\l", 5) == 1
+    assert count_preceeding_backslashes("", 0) == 0
+    assert count_preceeding_backslashes("\\t", 1) == 1
+    assert count_preceeding_backslashes("\\\\t", 2) == 2
+    assert count_preceeding_backslashes("\\\\t \\l", 5) == 1
 
 def test_change_extension():
     assert change_file_extension("test.docx", "md") == "test.md"
