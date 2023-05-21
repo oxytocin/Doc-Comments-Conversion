@@ -1,5 +1,7 @@
 # Doc Comments Conversion
 
+[Video demo:](https://youtu.be/V_vfDR9o75c)
+
 If you are not already familiar with the Doc Comments plugin, see [here](https://github.com/oxytocin/DocComments). It allows you to make inline annotations in Neovim that are stored in a separate file and signified by highlights.
 
 This repository contains a couple scripts to convert a text file + its corresponding Doc Comments file into a docx file and vice versa. In theory, if someone sent you a commented docx file, you could convert and read it in Neovim, make your own comments with Doc Comments, and export back to docx.
